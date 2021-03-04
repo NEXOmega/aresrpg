@@ -11,5 +11,8 @@
     "prefer-destructuring": "error",
     "prefer-numeric-literals": "error",
     "import/order": ["error", { "newlines-between": "always" }]
+  },
+  "globals": {
+    "AbortController": "readonly"
   }
 }

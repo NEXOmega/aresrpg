@@ -7,8 +7,9 @@ import { last_event_value } from './events.js'
 import mobs_goto from './mobs/goto.js'
 import mobs_damage from './mobs/damage.js'
 import mobs_target from './mobs/target.js'
-import { path_end } from './mobs/path.js'
+import { path_end, path_position } from './mobs/path.js'
 import behavior_tree from './mobs/behavior_tree.js'
+import { chunk_position } from './chunk.js'
 
 function reduce_mob(state, action, world) {
   return [
@@ -57,12 +58,19 @@ export default {
 
       setImmediate(() => events.emit('state', initial_state))
 
+      const get_state = last_event_value(events, 'state')
+
       return {
         entity_id,
         mob,
         level,
         events,
-        get_state: last_event_value(events, 'state'),
+        get_state,
+        position(time = Date.now()) {
+          const { path, start_time, speed } = get_state()
+
+          return path_position({ path, time, start_time, speed })
+        },
         dispatch(type, payload, time = Date.now()) {
           actions.write({ type, payload, time })
         },
@@ -82,6 +90,16 @@ export default {
           if (id >= next_entity_id && id <= next_entity_id + mobs.length)
             return mobs[id - next_entity_id]
           else return null
+        },
+        by_chunk(chunk_x, chunk_z) {
+          return mobs.filter(({ position }) => {
+            const { x, z } = position()
+
+            const same_x = chunk_x === chunk_position(x)
+            const same_z = chunk_z === chunk_position(z)
+
+            return same_x && same_z
+          })
         },
       },
     }

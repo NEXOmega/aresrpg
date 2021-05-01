@@ -1,0 +1,5 @@
+apiVersion: v2
+name: aresrpg
+description: AresRPG is a Minecraft MMORPG Serves
+type: application
+version: 1.0.0

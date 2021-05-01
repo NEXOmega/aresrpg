@@ -47,6 +47,8 @@
 
           packageLock = outputLock;
 
+          dontPatchShebangs = true;
+
           NO_UPDATE_NOTIFIER = true;
 
           installPhase = ''
@@ -55,9 +57,12 @@
 
             cp $packageLockPath package-lock.json
 
-            ln -s ${floor1} world/floor1
+            rm -rf world/floor1
+            ln -sT ${floor1} world/floor1
 
             npm ci --production
+
+            rm package-lock.json node_modules/.package-lock.json
           '';
         };
       in
@@ -81,7 +86,7 @@
             tag = "latest";
 
             config = {
-              Cmd = [ "${pkgs.nodejs-15_x}/bin/node" "${aresrpg}/src/index.js" ];
+              Cmd = [ "${pkgs.nodejs-slim-15_x}/bin/node" "${aresrpg}/src/index.js" ];
               ExposedPorts = {
                 "25565/tcp" = {};
               };

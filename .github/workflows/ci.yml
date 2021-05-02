@@ -29,3 +29,14 @@ jobs:
         with:
           name: docker-image
           path: image.tar.gz
+  publish:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: docker-image
+      - run: docker load < image.tar.gz
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: docker tag aresrpg ghcr.io/aresrpg/aresrpg:latest
+      - run: docker push ghcr.io/aresrpg/aresrpg:latest

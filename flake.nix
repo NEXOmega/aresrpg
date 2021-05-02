@@ -87,6 +87,7 @@
 
             config = {
               Cmd = [ "${pkgs.nodejs-slim-15_x}/bin/node" "${aresrpg}/src/index.js" ];
+              Label = nixpkgs.lib.mkIf (self ? rev) "rev=${self.rev}";
               ExposedPorts = {
                 "25565/tcp" = {};
               };
